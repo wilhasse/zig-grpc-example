@@ -2,3 +2,4 @@ zig-cache/
 zig-out/
 bazel-*
 .idea/
+.zig-cache

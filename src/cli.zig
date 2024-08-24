@@ -8,17 +8,25 @@ pub const GrpcExampleArgs = struct {
 };
 
 pub fn parseArgs() !*GrpcExampleArgs {
+
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    defer _ = gpa.deinit();
+    const allocator = gpa.allocator();
+
     const params = comptime clap.parseParamsComptime(
         \\-p, --port <u16>   Port to listen on.
     );
+
     var diag = clap.Diagnostic{};
     var res = clap.parse(clap.Help, &params, clap.parsers.default, .{
         .diagnostic = &diag,
+        .allocator = allocator,
     }) catch |err| {
         diag.report(io.getStdErr().writer(), err) catch {};
         return err;
     };
     defer res.deinit();
+
     var args = GrpcExampleArgs{
         .port = 3000,
     };
